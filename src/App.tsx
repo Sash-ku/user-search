@@ -1,41 +1,21 @@
-import { useState } from 'react'
-import { useUser } from './hooks/useUser'
-import { ErrorMessage } from './components/ErrorMessage'
-import { UserCard } from './components/UserCard'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { HomePage } from './pages/HomePage';
+import { UserProfilePage } from './pages/UserProfilePage';
+
+const queryClient = new QueryClient();
 
 function App() {
-  const [username, setUsername] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState('');
-
-  const { data: user, isLoading, error, isError } = useUser(username);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = inputValue.trim();
-    if (trimmed) {
-      setUsername(trimmed);
-    }
-  };
-
-  return (
-    <div>
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Введите имя пользователя GitHub"
-        />
-        <button type="submit">Найти</button>
-      </form>
-
-      {isLoading && <div> Поиск</div>}
-
-      {isError && <ErrorMessage error={error} />}
-
-      {user && <UserCard user={user} />}
-    </div>
-  );
+    return (
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/user/:username" element={<UserProfilePage />} />
+                </Routes>
+            </BrowserRouter>
+        </QueryClientProvider>
+    );
 }
 
-export default App
+export default App;
