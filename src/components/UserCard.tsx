@@ -1,99 +1,94 @@
+import {
+    Card, Avatar, Group, Stack, Text, Badge, Divider, Anchor,
+} from '@mantine/core';
+import {
+    IconBuilding, IconMapPin, IconLink, IconCalendar,
+} from '@tabler/icons-react';
 import { formatDate, formatNumber } from '../utils/formatters';
-import { User } from '../  types/User';
+import type { User } from '../types/User';
 
 interface UserCardProps {
     user: User;
 }
 
 export function UserCard({ user }: UserCardProps) {
+    const blogUrl = user.blog
+        ? user.blog.startsWith('http') ? user.blog : `https://${user.blog}`
+        : null;
+
+    const validBlog = blogUrl && /^https?:\/\//.test(blogUrl) ? blogUrl : null;
+
     return (
-        <div className="user-card">
-            <div className="user-card__header">
-                <img
+        <Card withBorder shadow="sm" padding="lg" radius="md" w={500} maw="100%">
+            <Group align="flex-start" gap="md" mb="md">
+                <Avatar
                     src={user.avatar_url}
-                    alt={`Аватар ${user.login}`}
-                    className="user-card__avatar"
+                    alt={user.login}
+                    size={80}
+                    radius="xl"
                 />
-                <div className="user-card__info">
-                    <h2 className="user-card__name">
+                <Stack gap={2}>
+                    <Text fw={600} size="xl" lh={1.2}>
                         {user.name || user.login}
-                    </h2>
-                    <a
+                    </Text>
+                    <Anchor
                         href={user.html_url}
                         target="_blank"
-                        rel="noopener noreferrer"
-                        className="user-card__login"
+                        c="dimmed"
+                        size="sm"
                     >
                         @{user.login}
-                    </a>
-                </div>
-            </div>
+                    </Anchor>
+                </Stack>
+            </Group>
 
             {user.bio && (
-                <p className="user-card__bio">{user.bio}</p>
+                <Text size="sm" mb="md">{user.bio}</Text>
             )}
 
-            <div className="user-card__details">
+            <Stack gap="xs" p="sm" bg="var(--mantine-color-gray-0)" radius="sm" mb="md">
                 {user.company && (
-                    <div className="user-card__detail">
-                        <span className="user-card__icon">🏢</span>
-                        <span>{user.company}</span>
-                    </div>
+                    <Group gap="xs">
+                        <IconBuilding size={16} />
+                        <Text size="sm">{user.company}</Text>
+                    </Group>
                 )}
-
                 {user.location && (
-                    <div className="user-card__detail">
-                        <span className="user-card__icon">📍</span>
-                        <span>{user.location}</span>
-                    </div>
+                    <Group gap="xs">
+                        <IconMapPin size={16} />
+                        <Text size="sm">{user.location}</Text>
+                    </Group>
                 )}
-
-                {user.blog && (
-                    <div className="user-card__detail">
-                        <span className="user-card__icon">🔗</span>
-                        <a
-                            href={
-                                user.blog.startsWith('http')
-                                    ? user.blog
-                                    : `https://${user.blog}`
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="user-card__link"
-                        >
+                {validBlog && (
+                    <Group gap="xs">
+                        <IconLink size={16} />
+                        <Anchor href={validBlog} target="_blank" size="sm" lineClamp={1}>
                             {user.blog}
-                        </a>
-                    </div>
+                        </Anchor>
+                    </Group>
                 )}
+                <Group gap="xs">
+                    <IconCalendar size={16} />
+                    <Text size="sm" c="dimmed">
+                        На GitHub с {formatDate(user.created_at)}
+                    </Text>
+                </Group>
+            </Stack>
 
-                <div className="user-card__detail">
-                    <span className="user-card__icon">📅</span>
-                    <span>Присоединился {formatDate(user.created_at)}</span>
-                </div>
-            </div>
+            <Divider mb="md" />
 
-            <div className="user-card__stats">
-                <div className="user-card__stat">
-                    <span className="user-card__stat-value">
-                        {formatNumber(user.public_repos)}
-                    </span>
-                    <span className="user-card__stat-label">Репозиториев</span>
-                </div>
-
-                <div className="user-card__stat">
-                    <span className="user-card__stat-value">
-                        {formatNumber(user.followers)}
-                    </span>
-                    <span className="user-card__stat-label">Подписчиков</span>
-                </div>
-
-                <div className="user-card__stat">
-                    <span className="user-card__stat-value">
-                        {formatNumber(user.following)}
-                    </span>
-                    <span className="user-card__stat-label">Подписок</span>
-                </div>
-            </div>
-        </div>
+            <Group grow>
+                {[
+                    { value: user.public_repos, label: 'Репозиториев' },
+                    { value: user.followers, label: 'Подписчиков' },
+                    { value: user.following, label: 'Подписок' },
+                ].map(({ value, label }) => (
+                    <Stack key={label} align="center" gap={4}>
+                        <Text fw={600} size="lg">{formatNumber(value)}</Text>
+                        <Text size="xs" c="dimmed">{label}</Text>
+                    </Stack>
+                ))}
+            </Group>
+        </Card>
     );
 }

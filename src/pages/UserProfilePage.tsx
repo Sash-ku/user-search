@@ -1,44 +1,52 @@
+// src/pages/UserProfilePage.tsx
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Button, Stack, Loader, Text } from '@mantine/core';
+import { IconArrowLeft } from '@tabler/icons-react';
 import { useUser } from '../hooks/useUser';
+import { useSearchHistory } from '../hooks/useSearchHistory';
 import { UserCard } from '../components/UserCard';
 import { ErrorMessage } from '../components/ErrorMessage';
 
 export function UserProfilePage() {
-    const { username } = useParams<{ username: string }>();
+    const { username = '' } = useParams<{ username: string }>();
     const navigate = useNavigate();
-    const { data: user, isLoading, error } = useUser(username || null);
+    const { data: user, isLoading, error, refetch } = useUser(username || null);
+    const { addToHistory } = useSearchHistory();
 
-    if (isLoading) {
-        return <div className="loading">Загрузка...</div>;
-    }
+    useEffect(() => {
+        if (user?.login) {
+            addToHistory(user.login);
+        }
+    }, [user?.login, addToHistory]);
 
-    if (error) {
-        return (
-            <div className="error-container">
-                <ErrorMessage error={error} />
-                <button 
-                    onClick={() => navigate('/')}
-                    className="back-button"
-                >
-                    ← Вернуться к поиску
-                </button>
-            </div>
-        );
-    }
+    return (
+        <Stack align="center" gap="lg" p="lg" mih="100vh">
+            <Button
+                variant="subtle"
+                leftSection={<IconArrowLeft size={16} />}
+                onClick={() => navigate('/')}
+                style={{ alignSelf: 'flex-start' }}
+            >
+                К поиску
+            </Button>
 
-    if (user) {
-        return (
-            <div className="user-profile-page">
-                <button 
-                    onClick={() => navigate('/')}
-                    className="back-button"
-                >
-                    ← Вернуться к поиску
-                </button>
-                <UserCard user={user} />
-            </div>
-        );
-    }
+            {isLoading && (
+                <Stack align="center" gap="xs" py="xl">
+                    <Loader color="blue" />
+                    <Text c="dimmed" size="sm">Ищем @{username}…</Text>
+                </Stack>
+            )}
 
-    return null;
+            {error && <ErrorMessage error={error} />}
+
+            {error && (
+                <Button variant="light" onClick={() => refetch()}>
+                    Повторить
+                </Button>
+            )}
+
+            {user && <UserCard user={user} />}
+        </Stack>
+    );
 }
