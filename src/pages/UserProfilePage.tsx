@@ -1,12 +1,14 @@
-// src/pages/UserProfilePage.tsx
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Stack, Loader, Text } from '@mantine/core';
+import {
+    Button, Stack, Loader, Text, Grid, Group, Paper,
+} from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { useUser } from '../hooks/useUser';
 import { useSearchHistory } from '../hooks/useSearchHistory';
 import { UserCard } from '../components/UserCard';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { RepoList } from '../components/RepoList';
 
 export function UserProfilePage() {
     const { username = '' } = useParams<{ username: string }>();
@@ -21,7 +23,7 @@ export function UserProfilePage() {
     }, [user?.login, addToHistory]);
 
     return (
-        <Stack align="center" gap="lg" p="lg" mih="100vh">
+        <Stack gap="lg" p="lg" mih="100vh">
             <Button
                 variant="subtle"
                 leftSection={<IconArrowLeft size={16} />}
@@ -46,7 +48,20 @@ export function UserProfilePage() {
                 </Button>
             )}
 
-            {user && <UserCard user={user} />}
+            {user && (
+                <Grid>
+                    <Grid.Col span={{ base: 12, md: 4 }}>
+                        <div style={{ position: 'sticky', top: 20 }}>
+                            <UserCard user={user} />
+                        </div>
+                    </Grid.Col>
+                    <Grid.Col span={{ base: 12, md: 8 }}>
+                        <Paper withBorder p="md" radius="md">
+                            <RepoList username={user.login} />
+                        </Paper>
+                    </Grid.Col>
+                </Grid>
+            )}
         </Stack>
     );
 }

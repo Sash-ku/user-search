@@ -46,7 +46,7 @@ export function UserCard({ user }: UserCardProps) {
                 <Text size="sm" mb="md">{user.bio}</Text>
             )}
 
-            <Stack gap="xs" p="sm" bg="var(--mantine-color-gray-0)" radius="sm" mb="md">
+            <Stack gap="xs" p="sm" bg="#f1f3f5" radius="sm" mb="md">
                 {user.company && (
                     <Group gap="xs">
                         <IconBuilding size={16} />
@@ -79,11 +79,11 @@ export function UserCard({ user }: UserCardProps) {
 
             <Group grow>
                 {[
-                    { value: user.public_repos, label: 'Репозиториев' },
+                    { value: user.public_repos, label: 'Репозиториев', bg:'#f1f3f5' },
                     { value: user.followers, label: 'Подписчиков' },
                     { value: user.following, label: 'Подписок' },
-                ].map(({ value, label }) => (
-                    <Stack key={label} align="center" gap={4}>
+                ].map(({ value, label, bg }) => (
+                    <Stack key={label} align="center" gap={4} bg={bg} >
                         <Text fw={600} size="lg">{formatNumber(value)}</Text>
                         <Text size="xs" c="dimmed">{label}</Text>
                     </Stack>

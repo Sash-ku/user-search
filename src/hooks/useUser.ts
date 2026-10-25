@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchUser, GitHubApiError } from '../api/fetchUser';
-import { User } from '../  types/User';
+import { User } from '../types/User';
 
 export function useUser(username: string | null) {
   return useQuery<User, GitHubApiError>({
@@ -13,7 +13,6 @@ export function useUser(username: string | null) {
     },
     enabled: !!username,
     retry: (failureCount, error) => {
-      // Не ретраим, если пользователь не найден или rate limit
       if (error.code === 'NOT_FOUND' || error.code === 'RATE_LIMIT') {
         return false;
       }
