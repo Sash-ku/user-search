@@ -128,8 +128,7 @@ export function RepoList({ username }: RepoListProps) {
                     {filteredRepos.map((repo) => (
                         <RepoCard key={repo.id} repo={repo} />
                     ))}
-
-                    {/* Sentinel для infinite scroll */}
+                    
                     <div ref={ref} style={{ height: 1 }} />
 
                     {isFetchingNextPage && (
